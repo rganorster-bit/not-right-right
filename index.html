@@ -1,1 +1,326 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>לא נכון נכון!</title>
 
+<style>
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#FFD400;
+    text-align:center;
+    color:#111;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+h1{
+    font-size:52px;
+    margin-top:20px;
+}
+
+.score{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    font-size:26px;
+    font-weight:bold;
+    margin:20px 0;
+}
+
+#gameTimer{
+    font-size:40px;
+    font-weight:bold;
+    margin:15px 0;
+}
+
+#question{
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    font-size:36px;
+    font-weight:bold;
+    min-height:90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:20px auto;
+    max-width:700px;
+}
+
+#countdown{
+    font-size:70px;
+    font-weight:bold;
+    margin:20px;
+}
+
+button{
+    border:none;
+    border-radius:15px;
+    padding:15px 30px;
+    font-size:24px;
+    cursor:pointer;
+    margin:10px;
+}
+
+.success{
+    background:#4CAF50;
+    color:white;
+}
+
+.fail{
+    background:#F44336;
+    color:white;
+}
+
+.start{
+    background:#111;
+    color:white;
+}
+
+#summary{
+    display:none;
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    margin-top:20px;
+}
+
+@media(max-width:600px){
+
+h1{
+    font-size:34px;
+}
+
+#question{
+    font-size:24px;
+}
+
+#countdown{
+    font-size:48px;
+}
+
+button{
+    font-size:18px;
+    padding:12px 20px;
+}
+
+.score{
+    font-size:18px;
+}
+
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>🤪 לא נכון נכון!</h1>
+
+<div class="score">
+<div>🏆 הצליחו: <span id="success">0</span></div>
+<div>❌ נפסלו: <span id="fail">0</span></div>
+</div>
+
+<div id="gameTimer">⏱️ 01:00</div>
+
+<button class="start" onclick="startGame()">
+🚀 התחל משחק
+</button>
+
+<div id="question">
+לחצו על "התחל משחק"
+</div>
+
+<div id="countdown"></div>
+
+<div id="buttons" style="display:none;">
+<button class="success" onclick="successAnswer()">
+✅ הצליחו
+</button>
+
+<button class="fail" onclick="failAnswer()">
+❌ נפסלו
+</button>
+</div>
+
+<div id="summary">
+<h2>🏁 המשחק הסתיים!</h2>
+
+<p>🏆 הצלחות: <span id="finalSuccess"></span></p>
+<p>❌ נפסלו: <span id="finalFail"></span></p>
+<p>🎯 סך הכול שאלות: <span id="finalTotal"></span></p>
+
+<button class="start" onclick="location.reload()">
+🔄 שחקו שוב
+</button>
+</div>
+
+</div>
+
+<script>
+
+const questions = [
+
+"מה נותנת פרה?",
+"איפה גרים דגים?",
+"מה צבע השמש?",
+"כמה ימים יש בשבוע?",
+"מה אוכלים בבוקר?",
+"מה עושה רופא?",
+"מה עושה שוטר?",
+"מה צבע הדשא?",
+"מה יש בים?",
+"מה יש במקרר?",
+"מה עושים במיטה?",
+"מה יש בשמיים?",
+"מה עושה מורה?",
+"מה צבע בננה?",
+"מה אוכלת פרה?",
+"מה יש בסופר?",
+"מה עושים עם מטרייה?",
+"מה עושים עם טלפון?",
+"מה צבע עגבנייה?",
+"מה יש בגן חיות?",
+"מה עושה טבח?",
+"מה יש בכיתה?",
+"מה עושים במטבח?",
+"מה עושה נהג?",
+"מה יש בחוף הים?",
+"מה צבע השלג?",
+"מה עושים במקלחת?",
+"מה יש בבית חולים?",
+"מה עושה טייס?",
+"מה צבע הים?",
+"מה עושים עם מחשב?",
+"מה יש בפארק?",
+"מה צבע תפוז?",
+"מה עושים עם כדור?",
+"מה יש בספרייה?",
+"מה צבע עננים?",
+"מה עושה כבאי?",
+"מה יש ביער?",
+"מה עושה זמר?",
+"מה יש על עץ?",
+"מה עושים עם אופניים?",
+"מה יש בבית ספר?",
+"מה צבע הלימון?",
+"מה עושים עם מברשת שיניים?",
+"מה יש במטוס?",
+"מה עושה חקלאי?",
+"מה יש בתחנת דלק?",
+"מה עושים עם מזלג?",
+"מה יש במגרש כדורגל?",
+"מה צבע הענבים?"
+
+];
+
+let success = 0;
+let fail = 0;
+let gameTime = 60;
+let gameInterval;
+
+function randomQuestion(){
+return questions[Math.floor(Math.random()*questions.length)];
+}
+
+function startGame(){
+
+document.querySelector(".start").style.display="none";
+document.getElementById("buttons").style.display="block";
+
+nextQuestion();
+
+gameInterval = setInterval(()=>{
+
+gameTime--;
+
+let sec = gameTime.toString().padStart(2,"0");
+
+document.getElementById("gameTimer").innerHTML =
+`⏱️ 00:${sec}`;
+
+if(gameTime<=0){
+
+clearInterval(gameInterval);
+
+document.getElementById("buttons").style.display="none";
+document.getElementById("question").style.display="none";
+document.getElementById("countdown").style.display="none";
+
+document.getElementById("summary").style.display="block";
+
+document.getElementById("finalSuccess").innerText = success;
+document.getElementById("finalFail").innerText = fail;
+document.getElementById("finalTotal").innerText =
+success + fail;
+
+}
+
+},1000);
+
+}
+
+function nextQuestion(){
+
+document.getElementById("question").innerHTML =
+randomQuestion();
+
+let count = 3;
+
+document.getElementById("countdown").innerHTML = count;
+
+const countdownInterval = setInterval(()=>{
+
+count--;
+
+document.getElementById("countdown").innerHTML = count;
+
+if(count<=0){
+
+clearInterval(countdownInterval);
+
+document.getElementById("countdown").innerHTML =
+"⏰";
+
+}
+
+},1000);
+
+}
+
+function successAnswer(){
+
+success++;
+
+document.getElementById("success").innerText =
+success;
+
+nextQuestion();
+
+}
+
+function failAnswer(){
+
+fail++;
+
+document.getElementById("fail").innerText =
+fail;
+
+nextQuestion();
+
+}
+
+</script>
+
+</body>
+</html>

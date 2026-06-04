@@ -3,166 +3,176 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>לא נכון נכון!</title>
 
 <style>
 
 body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#FFD400;
-    text-align:center;
-    color:#111;
+margin:0;
+font-family:Arial,sans-serif;
+background:#FFD400;
+text-align:center;
+color:#111;
 }
 
 .container{
-    max-width:900px;
-    margin:auto;
-    padding:20px;
+max-width:900px;
+margin:auto;
+padding:20px;
 }
 
 h1{
-    font-size:52px;
-    margin-top:20px;
+font-size:50px;
+margin-bottom:10px;
 }
 
-.score{
-    display:flex;
-    justify-content:center;
-    gap:30px;
-    font-size:26px;
-    font-weight:bold;
-    margin:20px 0;
+.scoreboard{
+display:flex;
+justify-content:center;
+gap:30px;
+font-size:24px;
+font-weight:bold;
+margin-bottom:20px;
 }
 
 #gameTimer{
-    font-size:40px;
-    font-weight:bold;
-    margin:15px 0;
+font-size:38px;
+font-weight:bold;
+margin-bottom:20px;
 }
 
 #question{
-    background:white;
-    padding:30px;
-    border-radius:20px;
-    font-size:36px;
-    font-weight:bold;
-    min-height:90px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin:20px auto;
-    max-width:700px;
+background:white;
+border-radius:20px;
+padding:25px;
+font-size:32px;
+font-weight:bold;
+min-height:90px;
+display:flex;
+justify-content:center;
+align-items:center;
+max-width:700px;
+margin:auto;
 }
 
 #countdown{
-    font-size:70px;
-    font-weight:bold;
-    margin:20px;
+font-size:80px;
+font-weight:bold;
+margin:20px;
 }
 
 button{
-    border:none;
-    border-radius:15px;
-    padding:15px 30px;
-    font-size:24px;
-    cursor:pointer;
-    margin:10px;
-}
-
-.success{
-    background:#4CAF50;
-    color:white;
-}
-
-.fail{
-    background:#F44336;
-    color:white;
+border:none;
+border-radius:15px;
+padding:15px 30px;
+font-size:24px;
+cursor:pointer;
+margin:10px;
 }
 
 .start{
-    background:#111;
-    color:white;
+background:#111;
+color:white;
+}
+
+.success{
+background:#4CAF50;
+color:white;
+}
+
+.fail{
+background:#F44336;
+color:white;
+}
+
+#controls{
+display:none;
 }
 
 #summary{
-    display:none;
-    background:white;
-    padding:25px;
-    border-radius:20px;
-    margin-top:20px;
+display:none;
+background:white;
+border-radius:20px;
+padding:25px;
+margin-top:20px;
 }
 
 @media(max-width:600px){
 
 h1{
-    font-size:34px;
+font-size:34px;
 }
 
 #question{
-    font-size:24px;
+font-size:24px;
 }
 
 #countdown{
-    font-size:48px;
+font-size:55px;
 }
 
 button{
-    font-size:18px;
-    padding:12px 20px;
+font-size:18px;
+padding:12px 20px;
 }
 
-.score{
-    font-size:18px;
+.scoreboard{
+font-size:18px;
 }
 
 }
 
 </style>
 </head>
+
 <body>
 
 <div class="container">
 
 <h1>🤪 לא נכון נכון!</h1>
 
-<div class="score">
+<div class="scoreboard">
 <div>🏆 הצליחו: <span id="success">0</span></div>
 <div>❌ נפסלו: <span id="fail">0</span></div>
 </div>
 
 <div id="gameTimer">⏱️ 01:00</div>
 
-<button class="start" onclick="startGame()">
+<button id="startBtn" class="start" onclick="startGame()">
 🚀 התחל משחק
 </button>
 
 <div id="question">
-לחצו על "התחל משחק"
+לחצו על התחל משחק
 </div>
 
 <div id="countdown"></div>
 
-<div id="buttons" style="display:none;">
-<button class="success" onclick="successAnswer()">
+<div id="controls">
+<button class="success" onclick="markSuccess()">
 ✅ הצליחו
 </button>
 
-<button class="fail" onclick="failAnswer()">
+<button class="fail" onclick="markFail()">
 ❌ נפסלו
 </button>
 </div>
 
 <div id="summary">
+
 <h2>🏁 המשחק הסתיים!</h2>
 
-<p>🏆 הצלחות: <span id="finalSuccess"></span></p>
+<p>🏆 הצליחו: <span id="finalSuccess"></span></p>
+
 <p>❌ נפסלו: <span id="finalFail"></span></p>
+
 <p>🎯 סך הכול שאלות: <span id="finalTotal"></span></p>
 
 <button class="start" onclick="location.reload()">
 🔄 שחקו שוב
 </button>
+
 </div>
 
 </div>
@@ -226,43 +236,53 @@ const questions = [
 
 let success = 0;
 let fail = 0;
+
+let shuffledQuestions = [];
+let currentQuestion = 0;
+
 let gameTime = 60;
 let gameInterval;
 
-function randomQuestion(){
-return questions[Math.floor(Math.random()*questions.length)];
+function shuffleArray(array){
+
+for(let i=array.length-1;i>0;i--){
+
+const j=Math.floor(Math.random()*(i+1));
+
+[array[i],array[j]]=[array[j],array[i]];
+
+}
+
+return array;
 }
 
 function startGame(){
 
-document.querySelector(".start").style.display="none";
-document.getElementById("buttons").style.display="block";
+document.getElementById("startBtn").style.display="none";
 
-nextQuestion();
+document.getElementById("controls").style.display="block";
+
+shuffledQuestions =
+shuffleArray([...questions]);
+
+showQuestion();
 
 gameInterval = setInterval(()=>{
 
 gameTime--;
 
-let sec = gameTime.toString().padStart(2,"0");
+let minutes =
+Math.floor(gameTime/60);
+
+let seconds =
+gameTime%60;
 
 document.getElementById("gameTimer").innerHTML =
-`⏱️ 00:${sec}`;
+`⏱️ ${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
 
 if(gameTime<=0){
 
-clearInterval(gameInterval);
-
-document.getElementById("buttons").style.display="none";
-document.getElementById("question").style.display="none";
-document.getElementById("countdown").style.display="none";
-
-document.getElementById("summary").style.display="block";
-
-document.getElementById("finalSuccess").innerText = success;
-document.getElementById("finalFail").innerText = fail;
-document.getElementById("finalTotal").innerText =
-success + fail;
+endGame();
 
 }
 
@@ -270,53 +290,96 @@ success + fail;
 
 }
 
-function nextQuestion(){
+function showQuestion(){
+
+if(currentQuestion>=shuffledQuestions.length){
+
+shuffledQuestions =
+shuffleArray([...questions]);
+
+currentQuestion=0;
+
+}
 
 document.getElementById("question").innerHTML =
-randomQuestion();
+shuffledQuestions[currentQuestion];
 
-let count = 3;
+currentQuestion++;
 
-document.getElementById("countdown").innerHTML = count;
+let count=3;
 
-const countdownInterval = setInterval(()=>{
+document.getElementById("countdown").innerHTML =
+count;
+
+const timer =
+setInterval(()=>{
 
 count--;
 
-document.getElementById("countdown").innerHTML = count;
+if(count>0){
 
-if(count<=0){
+document.getElementById("countdown").innerHTML =
+count;
 
-clearInterval(countdownInterval);
+}else{
 
 document.getElementById("countdown").innerHTML =
 "⏰";
 
+clearInterval(timer);
+
 }
 
 },1000);
 
 }
 
-function successAnswer(){
+function markSuccess(){
 
 success++;
 
 document.getElementById("success").innerText =
 success;
 
-nextQuestion();
+showQuestion();
 
 }
 
-function failAnswer(){
+function markFail(){
 
 fail++;
 
 document.getElementById("fail").innerText =
 fail;
 
-nextQuestion();
+showQuestion();
+
+}
+
+function endGame(){
+
+clearInterval(gameInterval);
+
+document.getElementById("controls").style.display =
+"none";
+
+document.getElementById("question").style.display =
+"none";
+
+document.getElementById("countdown").style.display =
+"none";
+
+document.getElementById("summary").style.display =
+"block";
+
+document.getElementById("finalSuccess").innerText =
+success;
+
+document.getElementById("finalFail").innerText =
+fail;
+
+document.getElementById("finalTotal").innerText =
+success+fail;
 
 }
 

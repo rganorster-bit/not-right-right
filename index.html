@@ -2,185 +2,34 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>לא נכון נכון!</title>
-
 <style>
-
-body{
-margin:0;
-font-family:Arial,sans-serif;
-background:#FFD400;
-text-align:center;
-color:#111;
-}
-
-.container{
-max-width:900px;
-margin:auto;
-padding:20px;
-}
-
-h1{
-font-size:50px;
-margin-bottom:10px;
-}
-
-.scoreboard{
-display:flex;
-justify-content:center;
-gap:30px;
-font-size:24px;
-font-weight:bold;
-margin-bottom:20px;
-}
-
-#gameTimer{
-font-size:38px;
-font-weight:bold;
-margin-bottom:20px;
-}
-
-#question{
-background:white;
-border-radius:20px;
-padding:25px;
-font-size:32px;
-font-weight:bold;
-min-height:90px;
-display:flex;
-justify-content:center;
-align-items:center;
-max-width:700px;
-margin:auto;
-}
-
-#countdown{
-font-size:80px;
-font-weight:bold;
-margin:20px;
-}
-
-button{
-border:none;
-border-radius:15px;
-padding:15px 30px;
-font-size:24px;
-cursor:pointer;
-margin:10px;
-}
-
-.start{
-background:#111;
-color:white;
-}
-
-.success{
-background:#4CAF50;
-color:white;
-}
-
-.fail{
-background:#F44336;
-color:white;
-}
-
-#controls{
-display:none;
-}
-
-#summary{
-display:none;
-background:white;
-border-radius:20px;
-padding:25px;
-margin-top:20px;
-}
-
-@media(max-width:600px){
-
-h1{
-font-size:34px;
-}
-
-#question{
-font-size:24px;
-}
-
-#countdown{
-font-size:55px;
-}
-
-button{
-font-size:18px;
-padding:12px 20px;
-}
-
-.scoreboard{
-font-size:18px;
-}
-
-}
-
+body{margin:0;font-family:Arial;background:#FFD400;text-align:center}
+.container{max-width:900px;margin:auto;padding:20px}
+h1{font-size:48px}
+#timer{font-size:32px;font-weight:bold}
+#question{background:#fff;border-radius:20px;padding:30px;font-size:32px;min-height:90px;display:flex;justify-content:center;align-items:center;margin:20px 0}
+button{padding:14px 24px;font-size:22px;border:none;border-radius:12px;margin:8px;cursor:pointer}
+.start{background:#111;color:#fff} .ok{background:#4CAF50;color:#fff} .bad{background:#E53935;color:#fff}
+#controls,#summary{display:none}
 </style>
 </head>
-
 <body>
-
 <div class="container">
-
 <h1>🤪 לא נכון נכון!</h1>
-
-<div class="scoreboard">
-<div>🏆 הצליחו: <span id="success">0</span></div>
-<div>❌ נפסלו: <span id="fail">0</span></div>
-</div>
-
-<div id="gameTimer">⏱️ 01:00</div>
-
-<button id="startBtn" class="start" onclick="startGame()">
-🚀 התחל משחק
-</button>
-
-<div id="question">
-לחצו על התחל משחק
-</div>
-
-<div id="countdown"></div>
-
+<div>🏆 הצליחו: <span id="success">0</span> | ❌ נפסלו: <span id="fail">0</span></div>
+<div id="timer">⏱️ 01:00</div>
+<button id="startBtn" class="start" onclick="startGame()">🚀 התחל משחק</button>
+<div id="question">לחצו על התחל משחק</div>
 <div id="controls">
-<button class="success" onclick="markSuccess()">
-✅ הצליחו
-</button>
-
-<button class="fail" onclick="markFail()">
-❌ נפסלו
-</button>
+<button class="ok" onclick="markSuccess()">✅ הצליחו</button>
+<button class="bad" onclick="markFail()">❌ נפסלו</button>
 </div>
-
-<div id="summary">
-
-<h2>🏁 המשחק הסתיים!</h2>
-
-<p>🏆 הצליחו: <span id="finalSuccess"></span></p>
-
-<p>❌ נפסלו: <span id="finalFail"></span></p>
-
-<p>🎯 סך הכול שאלות: <span id="finalTotal"></span></p>
-
-<button class="start" onclick="location.reload()">
-🔄 שחקו שוב
-</button>
-
+<div id="summary"></div>
 </div>
-
-</div>
-
 <script>
-
-const questions = [
-
+const questions=[
 "מה נותנת פרה?",
 "איפה יש דגים?",
 "מה צבע השמש?",
@@ -193,197 +42,208 @@ const questions = [
 "מה יש במקרר?",
 "איפה ישנים?",
 "טויוטה זה סוג של?",
-"איפה מתפללים ?",
+"איפה מתפללים?",
 "מה צבע הבננה?",
 "מה אוכלת פרה?",
 "מה מתקן הסנדלר?",
 "באיזה גיל לבנים יש בר מצווה?",
 "עם מה מתקשרים הביתה?",
 "מה צבע העגבנייה?",
-"מה יש בגן חיות?",
-"מה עושה הטבח?",
-"באיזה מקום לומדים?",
-"מה עושים במטבח?",
-"איך נקרא זה שאוחז בהגה?",
-"...כבד את אביך ואת?",
-"מה צבע השלג?",
-"המאכל האיטלקי הכי מפורסם בעולם?",
-"איפה נמצאים כל החולים והפצועים?",
-"רוטב אדום עשוי מעבגניות?",
-"מה צבע הים?",
-"החיה הכי מהירה בטבע?",
-"באיזה ענף משחק ליאונל מסי?",
-"מה הצבע של תפוז?",
-"כמה שחקנים על המגרש במשחק כדורסל?",
+"מה עושה טבח?",
 "מה יש בספרייה?",
-"מה צבע העננים?",
-"מה עושה הכבאי?",
-"מה יש ביער?",
+"מה עושה כבאי?",
 "מה עושה זמר?",
-"מה יש על עץ?",
-"דו גלגלי בלי מנוע?",
-"איך נקרא הגשם הראשון?",
 "מה צבע הלימון?",
 "מה עושים עם מברשת שיניים?",
 "כמה ימים יש בשנה?",
-"איך עושה הפרה?",
-"כמה ימים הלכו בני ישראל במדבר?",
-"מה עושים עם מזלג וסכין?",
 "מה רואים בבית קולנוע?",
-"מה צבע הענבים?"
-
+"מה עושים עם מטרייה?",
+"מה עושים עם ספר?",
+"מה עושים עם מחברת?",
+"מה עושים עם עיפרון?",
+"מה עושים עם כדור?",
+"מה עושים עם אופניים?",
+"מה עושים עם מטוס?",
+"מה עושים עם רכבת?",
+"מה עושים עם מחשב?",
+"מה עושים עם טלפון?",
+"מה עושים עם פנס?",
+"מה עושים עם שמיכה?",
+"מה עושים עם כרית?",
+"מה עושים עם מזלג?",
+"מה עושים עם כפית?",
+"מה עושים עם סכין?",
+"מה עושים עם כדורגל?",
+"מה עושים עם כדורסל?",
+"מה עושים עם פסנתר?",
+"מה עושים עם גיטרה?",
+"מה עושים עם בית ספר?",
+"מה עושים עם ספרייה?",
+"מה עושים עם מוזיאון?",
+"מה עושים עם בית חולים?",
+"מה עושים עם בית מרקחת?",
+"מה עושים עם מאפייה?",
+"מה עושים עם סופר?",
+"מה עושים עם בנק?",
+"מה עושים עם דואר?",
+"מה עושים עם חוף?",
+"מה עושים עם בריכה?",
+"מה עושים עם שדה תעופה?",
+"מה עושים עם תחנת רכבת?",
+"מה עושים עם אוטובוס?",
+"מה עושים עם קסדה?",
+"מה עושים עם שעון?",
+"מה עושים עם משקפיים?",
+"מה עושים עם מצלמה?",
+"מה עושים עם תרמיל?",
+"מה עושים עם מטבח?",
+"מה עושים עם סלון?",
+"מה עושים עם גן?",
+"מה עושים עם יער?",
+"מה עושים עם מדבר?",
+"מה עושים עם הר?",
+"מה עושים עם נהר?",
+"מה עושים עם אגם?",
+"מה יש ב מטרייה?",
+"מה יש ב ספר?",
+"מה יש ב מחברת?",
+"מה יש ב עיפרון?",
+"מה יש ב כדור?",
+"מה יש ב אופניים?",
+"מה יש ב מטוס?",
+"מה יש ב רכבת?",
+"מה יש ב מחשב?",
+"מה יש ב טלפון?",
+"מה יש ב פנס?",
+"מה יש ב שמיכה?",
+"מה יש ב כרית?",
+"מה יש ב מזלג?",
+"מה יש ב כפית?",
+"מה יש ב סכין?",
+"מה יש ב כדורגל?",
+"מה יש ב כדורסל?",
+"מה יש ב פסנתר?",
+"מה יש ב גיטרה?",
+"מה יש ב בית ספר?",
+"מה יש ב ספרייה?",
+"מה יש ב מוזיאון?",
+"מה יש ב בית חולים?",
+"מה יש ב בית מרקחת?",
+"מה יש ב מאפייה?",
+"מה יש ב סופר?",
+"מה יש ב בנק?",
+"מה יש ב דואר?",
+"מה יש ב חוף?",
+"מה יש ב בריכה?",
+"מה יש ב שדה תעופה?",
+"מה יש ב תחנת רכבת?",
+"מה יש ב אוטובוס?",
+"מה יש ב קסדה?",
+"מה יש ב שעון?",
+"מה יש ב משקפיים?",
+"מה יש ב מצלמה?",
+"מה יש ב תרמיל?",
+"מה יש ב מטבח?",
+"מה יש ב סלון?",
+"מה יש ב גן?",
+"מה יש ב יער?",
+"מה יש ב מדבר?",
+"מה יש ב הר?",
+"מה יש ב נהר?",
+"מה יש ב אגם?",
+"מה קונים ב מטרייה?",
+"מה קונים ב ספר?",
+"מה קונים ב מחברת?",
+"מה קונים ב עיפרון?",
+"מה קונים ב כדור?",
+"מה קונים ב אופניים?",
+"מה קונים ב מטוס?",
+"מה קונים ב רכבת?",
+"מה קונים ב מחשב?",
+"מה קונים ב טלפון?",
+"מה קונים ב פנס?",
+"מה קונים ב שמיכה?",
+"מה קונים ב כרית?",
+"מה קונים ב מזלג?",
+"מה קונים ב כפית?",
+"מה קונים ב סכין?",
+"מה קונים ב כדורגל?",
+"מה קונים ב כדורסל?",
+"מה קונים ב פסנתר?",
+"מה קונים ב גיטרה?",
+"מה קונים ב בית ספר?",
+"מה קונים ב ספרייה?",
+"מה קונים ב מוזיאון?",
+"מה קונים ב בית חולים?",
+"מה קונים ב בית מרקחת?",
+"מה קונים ב מאפייה?",
+"מה קונים ב סופר?",
+"מה קונים ב בנק?",
+"מה קונים ב דואר?",
+"מה קונים ב חוף?",
+"מה קונים ב בריכה?",
+"מה קונים ב שדה תעופה?",
+"מה קונים ב תחנת רכבת?",
+"מה קונים ב אוטובוס?",
+"מה קונים ב קסדה?",
+"מה קונים ב שעון?",
+"מה קונים ב משקפיים?",
+"מה קונים ב מצלמה?",
+"מה קונים ב תרמיל?",
+"מה קונים ב מטבח?",
+"מה קונים ב סלון?",
+"מה קונים ב גן?",
+"מה קונים ב יער?",
+"מה קונים ב מדבר?",
+"מה קונים ב הר?",
+"מה קונים ב נהר?",
+"מה קונים ב אגם?",
+"איפה אפשר למצוא מטרייה?",
+"איפה אפשר למצוא ספר?",
+"איפה אפשר למצוא מחברת?",
+"איפה אפשר למצוא עיפרון?",
+"איפה אפשר למצוא כדור?",
+"איפה אפשר למצוא אופניים?",
+"איפה אפשר למצוא מטוס?",
+"איפה אפשר למצוא רכבת?",
+"איפה אפשר למצוא מחשב?",
+"איפה אפשר למצוא טלפון?",
+"איפה אפשר למצוא פנס?",
+"איפה אפשר למצוא שמיכה?",
+"איפה אפשר למצוא כרית?",
+"איפה אפשר למצוא מזלג?",
+"איפה אפשר למצוא כפית?",
+"איפה אפשר למצוא סכין?",
+"איפה אפשר למצוא כדורגל?",
+"איפה אפשר למצוא כדורסל?",
+"איפה אפשר למצוא פסנתר?",
+"איפה אפשר למצוא גיטרה?",
+"איפה אפשר למצוא בית ספר?",
+"איפה אפשר למצוא ספרייה?",
+"איפה אפשר למצוא מוזיאון?",
+"איפה אפשר למצוא בית חולים?",
+"איפה אפשר למצוא בית מרקחת?",
+"איפה אפשר למצוא מאפייה?",
+"איפה אפשר למצוא סופר?",
+"איפה אפשר למצוא בנק?",
+"איפה אפשר למצוא דואר?",
+"איפה אפשר למצוא חוף?",
+"איפה אפשר למצוא בריכה?",
+"איפה אפשר למצוא שדה תעופה?"
 ];
-
-let success = 0;
-let fail = 0;
-
-let shuffledQuestions = [];
-let currentQuestion = 0;
-
-let gameTime = 60;
-let gameInterval;
-
-function shuffleArray(array){
-
-for(let i=array.length-1;i>0;i--){
-
-const j=Math.floor(Math.random()*(i+1));
-
-[array[i],array[j]]=[array[j],array[i]];
-
-}
-
-return array;
-}
-
+let deck=[],success=0,fail=0,time=60,interval;
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+function resetDeck(){deck=[...questions];shuffle(deck);}
+function nextQuestion(){if(deck.length===0)resetDeck();document.getElementById('question').textContent=deck.pop();}
 function startGame(){
-
-document.getElementById("startBtn").style.display="none";
-
-document.getElementById("controls").style.display="block";
-
-shuffledQuestions =
-shuffleArray([...questions]);
-
-showQuestion();
-
-gameInterval = setInterval(()=>{
-
-gameTime--;
-
-let minutes =
-Math.floor(gameTime/60);
-
-let seconds =
-gameTime%60;
-
-document.getElementById("gameTimer").innerHTML =
-`⏱️ ${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-
-if(gameTime<=0){
-
-endGame();
-
+document.getElementById('startBtn').style.display='none';
+document.getElementById('controls').style.display='block';
+resetDeck();nextQuestion();
+interval=setInterval(()=>{time--;let m=String(Math.floor(time/60)).padStart(2,'0');let s=String(time%60).padStart(2,'0');document.getElementById('timer').textContent='⏱️ '+m+':'+s;if(time<=0)endGame();},1000);
 }
-
-},1000);
-
-}
-
-function showQuestion(){
-
-if(currentQuestion>=shuffledQuestions.length){
-
-shuffledQuestions =
-shuffleArray([...questions]);
-
-currentQuestion=0;
-
-}
-
-document.getElementById("question").innerHTML =
-shuffledQuestions[currentQuestion];
-
-currentQuestion++;
-
-let count=3;
-
-document.getElementById("countdown").innerHTML =
-count;
-
-const timer =
-setInterval(()=>{
-
-count--;
-
-if(count>0){
-
-document.getElementById("countdown").innerHTML =
-count;
-
-}else{
-
-document.getElementById("countdown").innerHTML =
-"⏰";
-
-clearInterval(timer);
-
-}
-
-},1000);
-
-}
-
-function markSuccess(){
-
-success++;
-
-document.getElementById("success").innerText =
-success;
-
-showQuestion();
-
-}
-
-function markFail(){
-
-fail++;
-
-document.getElementById("fail").innerText =
-fail;
-
-showQuestion();
-
-}
-
-function endGame(){
-
-clearInterval(gameInterval);
-
-document.getElementById("controls").style.display =
-"none";
-
-document.getElementById("question").style.display =
-"none";
-
-document.getElementById("countdown").style.display =
-"none";
-
-document.getElementById("summary").style.display =
-"block";
-
-document.getElementById("finalSuccess").innerText =
-success;
-
-document.getElementById("finalFail").innerText =
-fail;
-
-document.getElementById("finalTotal").innerText =
-success+fail;
-
-}
-
+function markSuccess(){success++;document.getElementById('success').textContent=success;nextQuestion();}
+function markFail(){fail++;document.getElementById('fail').textContent=fail;nextQuestion();}
+function endGame(){clearInterval(interval);document.getElementById('controls').style.display='none';document.getElementById('question').style.display='none';let d=document.getElementById('summary');d.style.display='block';d.innerHTML=`<h2>🏁 המשחק הסתיים!</h2><p>הצליחו: ${success}</p><p>נפסלו: ${fail}</p><p>סה"כ: ${success+fail}</p><button class="start" onclick="location.reload()">שחקו שוב</button>`;}
 </script>
-
 </body>
 </html>
